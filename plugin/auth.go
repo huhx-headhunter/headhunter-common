@@ -28,6 +28,12 @@ func AuthInterceptor() gin.HandlerFunc {
 			return
 		}
 
+		userId := c.Request.Header.Get("X-Request-User")
+		if userId == "" {
+			c.Abort()
+			panic(exception.BadRequest{Content: "UserId header is required"})
+		}
+
 		username := c.Request.Header.Get("X-Request-Username")
 		if username == "" {
 			c.Abort()
@@ -40,6 +46,7 @@ func AuthInterceptor() gin.HandlerFunc {
 		//	panic(exception.BadRequest{Content: "Host header is not correct"})
 		//}
 
+		store.Save("userId", userId)
 		store.Save("username", username)
 		c.Next()
 	}
